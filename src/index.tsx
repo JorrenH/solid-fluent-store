@@ -1,24 +1,20 @@
-import { Accessor, Component, createComputed, createSignal } from 'solid-js'
+import { createStore, Store } from 'solid-js/store'
 
-export function createHello(): [Accessor<string>, (to: string) => void] {
-  const [hello, setHello] = createSignal('Hello World!')
+type StoreOptions = { name?: string }
+type FluentStore<T> = [get: StoreReader<T>, set: StoreWriter<T>]
+type StoreReader<T> = T
+type StoreWriter<T> = T
 
-  return [hello, (to: string) => setHello(`Hello ${to}!`)]
+interface CreateFluentStore {
+  <T extends object>(store: T | Store<T>): FluentStore<T>
+  <T extends object = {}>(store: T | Store<T>, options: StoreOptions): FluentStore<T>
 }
 
-export const Hello: Component<{ to?: string }> = props => {
-  const [hello, setHello] = createHello()
+export const createFluentStore: CreateFluentStore = function <T extends object>(
+  store: T | Store<T>,
+  options?: StoreOptions,
+): FluentStore<T> {
+  const [read, write] = createStore(store, options)
 
-  // This will only log during development, console is removed in production
-  console.log('Hello World!')
-
-  createComputed(() => {
-    if (typeof props.to === 'string') setHello(props.to)
-  })
-
-  return (
-    <>
-      <div>{hello()}</div>
-    </>
-  )
+  return [read, read]
 }

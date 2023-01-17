@@ -1,17 +1,17 @@
 {
   "version": "0.0.0",
-  "name": "{{name_of_lib}}",
-  "description": "{{desc_of_lib}}",
+  "name": "solid-fluent-store",
+  "description": "Solid Fluent Store is a wrapper library for Solid stores. It provides a fluent and type-safe API to interact with a store while maintaining read/write segregation.",
   "license": "MIT",
-  "author": "{{me}}",
+  "author": "Jorren",
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/{{me}}/{{name_of_lib}}.git"
+    "url": "git+https://github.com/Jorren/solid-fluent-store.git"
   },
-  "homepage": "https://github.com/{{me}}/{{name_of_lib}}#readme",
+  "homepage": "https://github.com/Jorren/solid-fluent-store#readme",
   "bugs": {
-    "url": "https://github.com/{{me}}/{{name_of_lib}}/issues"
+    "url": "https://github.com/Jorren/solid-fluent-store/issues"
   },
   "files": [
     "dist"
@@ -25,29 +25,14 @@
   "browser": {},
   "exports": {
     "solid": {
-      "development": "./dist/index.dev.jsx",
       "import": "./dist/index.jsx"
     },
     "browser": {
-      "development": {
-        "import": {
-          "types": "./dist/index.d.ts",
-          "default": "./dist/index.dev.js"
-        },
-        "require": "./dist/index.dev.cjs"
-      },
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
       "require": "./dist/index.cjs"
-    },
-    "development": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.dev.js"
-      },
-      "require": "./dist/index.dev.cjs"
     },
     "import": {
       "types": "./dist/index.d.ts",
@@ -56,16 +41,15 @@
     "require": "./dist/index.cjs"
   },
   "scripts": {
-    "dev": "vite serve dev",
-    "test": "echo \"test not setup\"",
+    "test": "vitest",
     "build": "tsup",
     "prepublishOnly": "pnpm build",
-    "format": "prettier --ignore-path .gitignore -w \"src/**/*.{js,ts,json,css,tsx,jsx}\" \"dev/**/*.{js,ts,json,css,tsx,jsx}\"",
+    "format": "prettier --ignore-path .gitignore -w \"src/**/*.{js,ts,json,css,tsx,jsx}\"",
     "update-deps": "pnpm up -Li",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "solid-js": ">=1.6.0"
+    "solid-js": "^1.6.9"
   },
   "devDependencies": {
     "esbuild": "^0.17.0",
@@ -76,10 +60,13 @@
     "tsup-preset-solid": "^0.0.5",
     "typescript": "^4.9.4",
     "vite": "^4.0.4",
-    "vite-plugin-solid": "^2.5.0"
+    "vite-plugin-solid": "^2.5.0",
+    "vitest": "^0.27.2"
   },
   "keywords": [
-    "solid"
+    "solid",
+    "store",
+    "fluent"
   ],
   "packageManager": "pnpm@7.20.0"
 }

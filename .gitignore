@@ -1,6 +1,7 @@
 node_modules
 dist
 gitignore
+TODO.md
 
 # VSC Settings
 .vscode/settings.json
