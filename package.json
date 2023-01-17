@@ -41,7 +41,7 @@
     "require": "./dist/index.cjs"
   },
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run && pnpm typecheck",
     "build": "tsup",
     "prepublishOnly": "pnpm build",
     "format": "prettier --ignore-path .gitignore -w \"src/**/*.{js,ts,json,css,tsx,jsx}\"",

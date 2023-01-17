@@ -28,7 +28,7 @@ import { createFluentStore } from 'solid-fluent-store'
 
 ## Realised/planned features
 
-- [ ] Readonly reader to the store
+- [X] Readonly reader to the store
 - [ ] Writing values using object syntax as a function
 - [ ] Stream operators
 - [ ] Transparent array API
