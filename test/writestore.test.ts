@@ -1,7 +1,6 @@
 import { createEffect, createMemo, createRoot } from "solid-js";
 import { describe, test, expect } from "@jest/globals";
 import { createFluentStore, StoreWriter } from "../src";
-import { createStore } from "solid-js/store";
 
 describe("Write to a solid store through the fluent proxy", () => {
 
@@ -290,6 +289,14 @@ describe("Write to a solid store through the fluent proxy", () => {
 
         // @ts-expect-error write is not a Record-like type
         write.$filter((v,k) => true, {} as any);
+    }
+
+    // Allow union types
+    () => {
+        const [_read, write] = createFluentStore<{ a: 'one' | 'two' | 'three', b: boolean}>({ a: 'two', b: false });
+
+        write.a('one');
+        write.b(true);
     }
 
 });

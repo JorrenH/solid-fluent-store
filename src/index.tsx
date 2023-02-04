@@ -6,7 +6,7 @@ import { batch } from 'solid-js'
 export type StoreOptions = { name?: string }
 export type FluentStore<T> = [get: StoreReader<T>, set: StoreWriter<T>]
 export type StoreReader<T> = WrapReadOnly<T>
-export type StoreWriter<T, U extends PropertyKey[] = []> = T extends NotWrappable
+export type StoreWriter<T, U extends PropertyKey[] = []> = [T] extends [NotWrappable]
   ? SetStoreFunction<T, U>
   : [T] extends [unknown[]]
   ? SetArrayFunction<T, U>
