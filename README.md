@@ -31,8 +31,7 @@ import { createFluentStore } from 'solid-fluent-store'
 - [X] Stricter store reader
 - [X] Writing values using object syntax as a function
 - [X] Stream operators
-- [ ] Transparent array API
-- [ ] Transparent Set/Map API
+- [X] Mutations with built-in Array/Set/Map API
 - [ ] Record stream operators `$all`/`$filter`
 
 ## Basic usage
@@ -55,6 +54,32 @@ read.a.b // returns 7
 const writeA = write.a;
 writeA.b(8)
 read.a.b // returns 8
+```
+
+## Mutating built-in datastructures
+
+Regular stores do not allow you to use mutating Array, Set and Map methods. Instead you have to apply mutations and set the store value to a copy of the mutated structure. The fluent store proxy does this for you, meaning you can use the API you're familiar with without losing reactivity.
+
+```tsx
+const [read, write] = createFluentStore({
+  array: [1, 2, 3],
+  set: new Set([1, 2, 3]),
+  map: new Map([['a', 1], ['b', 2], ['c', 3]]),
+});
+
+let newLength = write.array.push(6, 9)
+// ^ equals 5
+read.array[2] // returns 3
+read.array[3] // returns 6
+read.array[4] // returns 9
+
+let setRemoved = write.set.delete(2)
+// ^ equals true
+read.set.has(2) // returns false
+
+let newMap = write.map.set('d', 4)
+// ^ NOTE: newMap is not reactive
+read.map.has('d') // returns true
 ```
 
 ## Stream operators

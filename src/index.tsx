@@ -10,6 +10,10 @@ export type StoreWriter<T, U extends PropertyKey[] = []> = T extends NotWrappabl
   ? SetStoreFunction<T, U>
   : [T] extends [unknown[]]
   ? SetArrayFunction<T, U>
+  : T extends Set<unknown>
+  ? SetSetFunction<T, U>
+  : T extends Map<unknown, unknown>
+  ? SetMapFunction<T, U>
   : SetObjectFunction<T, U>
 
 /* Store reader types */
@@ -31,6 +35,15 @@ type SetArrayFunction<T extends unknown[], U extends PropertyKey[]> = SetStoreFu
 
 type SetObjectFunction<T, U extends PropertyKey[]> = SetStoreFunction<T, U> & SetObjectProps<T, U>
 
+type SetSetFunction<T extends Set<unknown>, U extends PropertyKey[]> = SetStoreFunction<T, U> &
+  MutatingSetFunctions<T>
+
+type SetMapFunction<T extends Map<unknown, unknown>, U extends PropertyKey[]> = SetStoreFunction<
+  T,
+  U
+> &
+  MutatingMapFunctions<T>
+
 type SetObjectProps<T, U extends PropertyKey[]> = {
   [K in keyof T]: StoreWriter<T[K], [K, ...U]>
 } & {
@@ -49,7 +62,11 @@ type SetArrayProps<T extends readonly unknown[], U extends PropertyKey[]> = {
   $range: Array$range<T, U>
   $in: $in<T, U>
   $batch: $batch<T, U>
-}
+} & MutatingArrayFunctions<T>
+
+type MutatingArrayFunctions<T extends readonly any[]> = Omit<T, keyof ReadonlyArray<any>>
+type MutatingSetFunctions<T extends Set<any>> = Omit<T, keyof ReadonlySet<any>>
+type MutatingMapFunctions<T extends Map<any, any>> = Omit<T, keyof ReadonlyMap<any, any>>
 
 interface Record$all<K extends PropertyKey, V, U extends PropertyKey[]> {
   (): StoreWriter<V, [K, ...U]>
@@ -103,6 +120,8 @@ type StoreProxyContext<T> = {
   path: PathProperty[]
 }
 
+type TargetType = 'Array' | 'Set' | 'Map' | 'Other'
+
 export const createFluentStore: CreateFluentStore = function <T extends object>(
   store: T,
   options?: StoreOptions,
@@ -147,13 +166,88 @@ function writeStoreProxy<T>(context: StoreProxyContext<T>): StoreWriter<T> {
 
   return new Proxy(function () {}, {
     apply(_target, thisArg, argArray) {
-      ;(setStore as Function).apply(thisArg, [...path, ...argArray])
+      setStore.apply(thisArg, [...path, ...argArray])
     },
     get(target, parameter, _receiver) {
-      if ($streams.hasOwnProperty(parameter)) {
+      const [targetType, targetMethods] = evaluateTypeFunctions(store, path)
+      if (targetType !== 'Other' && targetMethods.includes(parameter)) {
+        return invokeTypeFunction(context, targetType, parameter)
+      } else if ($streams.hasOwnProperty(parameter)) {
         return $streams[parameter]!.apply(target, [context])
       }
       return writeStoreProxy({ store, setStore, path: [...path, parameter] })
     },
   }) as unknown as StoreWriter<T>
+}
+
+function invokeTypeFunction<T>(
+  context: StoreProxyContext<T>,
+  targetType: TargetType,
+  method: PropertyKey,
+) {
+  const { setStore, path } = context
+
+  return function () {
+    let result = undefined
+    setStore.apply({}, [
+      ...path,
+      (prev: any) => {
+        result = prev[method](...arguments)
+        if (targetType === 'Array') {
+          return [...prev]
+        } else if (targetType === 'Set') {
+          return new Set(prev.values())
+        } else if (targetType === 'Map') {
+          const newMap = new Map()
+          for (let [key, value] of prev.entries()) {
+            newMap.set(key, value)
+          }
+          return newMap
+        }
+      },
+    ])
+    return result
+  }
+}
+
+function evaluateTypeFunctions<T>(store: T, path: PathProperty[]): [TargetType, PropertyKey[]] {
+  const targetType = evaluateType(store, path)
+  switch (targetType) {
+    case 'Array':
+      return [
+        targetType,
+        ['copyWithin', 'fill', 'pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'],
+      ]
+    case 'Set':
+      return [targetType, ['add', 'clear', 'delete']]
+    case 'Map':
+      return [targetType, ['clear', 'delete', 'set']]
+    default:
+      return [targetType, []]
+  }
+}
+
+function evaluateType<T>(store: T, path: PathProperty[]): TargetType {
+  let node: any = store
+
+  for (let key of path) {
+    if (Array.isArray(key)) {
+      if (!key.length) return 'Other'
+      node = node[key[0]]
+    } else if (typeof key === 'function' || typeof key === 'object') {
+      // node must be an array
+      node = node[0]
+    } else {
+      node = node[key]
+    }
+  }
+
+  if (Array.isArray(node)) {
+    return 'Array'
+  } else if (node instanceof Set) {
+    return 'Set'
+  } else if (node instanceof Map) {
+    return 'Map'
+  }
+  return 'Other'
 }

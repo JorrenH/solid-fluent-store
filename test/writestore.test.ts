@@ -1,6 +1,7 @@
 import { createEffect, createMemo, createRoot } from "solid-js";
 import { describe, test, expect } from "@jest/globals";
 import { createFluentStore, StoreWriter } from "../src";
+import { createStore } from "solid-js/store";
 
 describe("Write to a solid store through the fluent proxy", () => {
 
@@ -56,6 +57,60 @@ describe("Write to a solid store through the fluent proxy", () => {
         write.a.b.c.d.e.f.g.h.i.j.k.l(2);
         
         expect(read.a.b.c.d.e.f.g.h.i.j.k.l).toEqual(2);
+    });
+
+    test("Modify array using mutating method", () => {
+        const [read, write] = createFluentStore([ 1, 2, 3 ]);
+
+        const newLen = write.push(4, 5, 6);
+
+        expect(newLen).toEqual(6);
+        expect(read[0]).toEqual(1);
+        expect(read[1]).toEqual(2);
+        expect(read[2]).toEqual(3);
+        expect(read[3]).toEqual(4);
+        expect(read[4]).toEqual(5);
+        expect(read[5]).toEqual(6);
+    });
+
+    test("Apply mutating method after streaming operator", () => {
+        const [read, write] = createFluentStore({ a: [1, 2, 3], b: [4, 5, 6], c: [7, 8, 9] });
+
+        write.$in(['a', 'c']).pop();
+        expect(read.a.length).toBe(2);
+        expect(read.b.length).toBe(3);
+        expect(read.c.length).toBe(2);
+    });
+
+    test("Modify Set using mutating method", () => {
+        const [read, write] = createFluentStore({ set: new Set([1, 2, 3]) });
+
+        const deleted = write.set.delete(2);
+        expect(deleted).toBe(true);
+        expect(read.set.has(1)).toBe(true);
+        expect(read.set.has(2)).toBe(false);
+        expect(read.set.has(3)).toBe(true);
+
+        write.set.clear();
+        expect(read.set.size).toBe(0);
+
+        write.set.add(5);
+        expect(read.set.has(5)).toBe(true);
+    });
+
+    test("Modify Map using mutating method", () => {
+        const [read, write] = createFluentStore({ map: new Map([['a', 1], ['b', 2], ['c', 3]]) });
+
+        const deleted = write.map.delete('b');
+        expect(read.map.has('a')).toBe(true);
+        expect(read.map.has('b')).toBe(false);
+        expect(read.map.has('c')).toBe(true);
+
+        write.map.clear();
+        expect(read.map.size).toBe(0);
+
+        write.map.set('d', 4);
+        expect(read.map.has('d')).toBe(true);
     });
 
     // TODO add 'all' and 'filter' functionality to Records
