@@ -1,6 +1,6 @@
 
 import { createStore } from 'solid-js/store';
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect } from '@jest/globals';
 import { createFluentStore, FluentStore } from '../src';
 
 describe("Reading a solid store throught the fluent proxy", () => {
