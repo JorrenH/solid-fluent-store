@@ -1,5 +1,5 @@
 {
-  "version": "0.0.0",
+  "version": "0.0.1",
   "name": "solid-fluent-store",
   "description": "Solid Fluent Store is a wrapper library for Solid stores. It provides a fluent and type-safe API to interact with a store while maintaining read/write segregation.",
   "license": "MIT",
@@ -7,11 +7,11 @@
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jorren/solid-fluent-store.git"
+    "url": "git+https://github.com/JorrenH/solid-fluent-store.git"
   },
-  "homepage": "https://github.com/Jorren/solid-fluent-store#readme",
+  "homepage": "https://github.com/JorrenH/solid-fluent-store#readme",
   "bugs": {
-    "url": "https://github.com/Jorren/solid-fluent-store/issues"
+    "url": "https://github.com/JorrenH/solid-fluent-store/issues"
   },
   "files": [
     "dist"
@@ -49,7 +49,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "solid-js": "^1.6.9"
+    "solid-js": "^1.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -63,7 +63,7 @@
     "jest-environment-jsdom": "^29.3.1",
     "prettier": "2.8.3",
     "solid-jest": "^0.2.0",
-    "solid-js": "^1.6.9",
+    "solid-js": "^1.6.0",
     "tsup": "^6.5.0",
     "tsup-preset-solid": "^0.0.5",
     "typescript": "^4.9.4"
