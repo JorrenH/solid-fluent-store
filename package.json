@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.2",
   "name": "solid-fluent-store",
   "description": "Solid Fluent Store is a wrapper library for Solid stores. It provides a fluent and type-safe API to interact with a store while maintaining read/write segregation.",
   "license": "MIT",
