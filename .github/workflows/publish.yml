@@ -18,7 +18,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          registry-url: https://npm.pkg.github.com/
           cache: pnpm
 
       - name: Install dependencies
@@ -30,4 +29,4 @@ jobs:
       - name: Publish package
         run: pnpm publish --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}

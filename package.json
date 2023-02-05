@@ -74,9 +74,6 @@
     "fluent"
   ],
   "packageManager": "pnpm@7.20.0",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@JorrenH"
-  },
   "jest": {
     "preset": "solid-jest/preset/browser",
     "testEnvironment": "jsdom"
