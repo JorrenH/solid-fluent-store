@@ -25,7 +25,7 @@
   "browser": {},
   "exports": {
     "solid": {
-      "import": "./dist/index.jsx"
+      "import": "./dist/index.js"
     },
     "browser": {
       "import": {
