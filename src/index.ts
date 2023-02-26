@@ -1,6 +1,6 @@
 import { createStore, unwrap as _unwrap } from 'solid-js/store'
 import type { StoreSetter, NotWrappable } from 'solid-js/store'
-import { batch } from 'solid-js'
+import { batch, untrack } from 'solid-js'
 
 /* Basic interfacing types */
 export type StoreOptions = { name?: string }
@@ -169,7 +169,7 @@ function writeStoreProxy<T>(context: StoreProxyContext<T>): StoreWriter<T> {
       setStore.apply(thisArg, [...path, ...argArray])
     },
     get(target, parameter, _receiver) {
-      const [targetType, targetMethods] = evaluateTypeFunctions(store, path)
+      const [targetType, targetMethods] = untrack(() => evaluateTypeFunctions(store, path));
       if (targetType !== 'Other' && targetMethods.includes(parameter)) {
         return invokeTypeFunction(context, targetType, parameter)
       } else if ($streams.hasOwnProperty(parameter)) {

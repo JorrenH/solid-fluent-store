@@ -36,6 +36,16 @@ describe("Write to a solid store through the fluent proxy", () => {
         expect(read[1]).toEqual(4);
     });
 
+    test("Can write to store without subscribing", () => {
+        const [read, write] = createFluentStore({ map: new Map<string, boolean> });
+
+        createEffect(() => {
+            write.map.set('first', true);
+        });
+
+        expect(read.map.get('first')).toEqual(true);
+    });
+
     test("Reuse paths stored in a variable", () => {
         const [read, write] = createFluentStore({ a: { b: { c: 1 } } });
 
